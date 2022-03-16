@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+    drupal:
+      image: drupal:8-apache
+      ports:
+        - 80:80
+      volumes:
+        - ./hilton_training/platform:/var/www/html/
+        # - ./php/php.ini:/usr/local/etc/php/conf.d/my.ini
+        # this takes advantage of the feature in Docker that a new anonymous
+        # volume (which is what we're creating here) will be initialized with the
+        # existing content of the image at the same location
+        # - /var/www/html/sites
+      restart: always
+      # domainname: mecchelp.local
+      # hostname: apac
+      networks:
+        drupal-network:
+          ipv4_address: 172.24.2.1
+
+    db:
+        image: mysql:8.0
+        restart: always
+        command: --default-authentication-plugin=mysql_native_password
+        volumes:
+            - ./mysql:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: MYSQL_DATABASE
+            MYSQL_USER: MYSQL_USER
+            MYSQL_PASSWORD: MYSQL_PASSWORD
+        ports:
+            - "9906:3306"
+        networks:
+            drupal-network:
+              ipv4_address: 172.24.2.2
+volumes:
+  db_data:
+
+networks:
+  drupal-network:
+    driver: bridge
+    ipam:
+            driver: default
+            config:
+                - subnet: "172.24.2.0/16"
