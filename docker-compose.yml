@@ -4,14 +4,19 @@ services:
       image: drupal:8-apache
       ports:
         - 80:80
+        - 443:443
       volumes:
         - ./hilton_training/platform:/var/www/html/
+        - ./keys/apac.mecchelp.local.crt:/etc/ssl/certs/apac.mecchelp.local.crt
+        - ./keys/apac.mecchelp.local.key:/etc/ssl/private/apac.mecchelp.local.key
+        - ./init.sh:/init.sh
         # - ./php/php.ini:/usr/local/etc/php/conf.d/my.ini
         # this takes advantage of the feature in Docker that a new anonymous
         # volume (which is what we're creating here) will be initialized with the
         # existing content of the image at the same location
         # - /var/www/html/sites
       restart: always
+      # entrypoint: sh -c "/init.sh"
       # domainname: mecchelp.local
       # hostname: apac
       networks:
